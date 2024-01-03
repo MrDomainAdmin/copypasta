@@ -1,0 +1,140 @@
+
+
+
+/* ----------------------tabs css---------------------------- */
+.tab-container {
+    display: flex;
+    align-items: flex-start;
+    /* Adjust alignment as needed */
+    padding: 20px;
+    /* Add padding for spacing */
+
+}
+
+.tab {
+    border-color: #FFFFFF;
+    border-width: thin;
+    border-radius: 5px 5px 0 0;
+    margin-right: 5px;
+
+}
+
+.tab:hover {
+    background-color: #f0f0f0 !important;
+    color: #000000;
+}
+
+.tab-content {
+    display: none;
+    padding: 20px;
+
+}
+
+.tab-content.active {
+    display: block;
+}
+
+
+/* ---------------------------dropzone css------------------------------- */
+
+
+div.table {
+    display: table;
+}
+div.table .file-row {
+    display: table-row;
+}
+div.table .file-header {
+    display: none;
+}
+div.table .file-row>div {
+    display: table-cell;
+    vertical-align: top;
+    padding: 8px;
+}
+div.table .file-row:nth-child(odd) {
+    background: #2b2d2d;
+}
+div.table .file-row:nth-child(even) {
+    background: #2e3232;
+}
+/* Hide the delete button initially */
+#previews .file-row .delete {
+    display: none;
+}
+/* Hide the start and cancel buttons and show the delete button */
+#previews .file-row.dz-success .start, #previews .file-row.dz-success .cancel {
+    display: none;
+}
+#previews .file-row.dz-success .delete {
+    display: block;
+}
+.green-progress-bar {
+    background-color: green;
+    /* Set the background color to green */
+    height: 50%;
+    /* Ensure the progress bar takes the full height of its container */
+    max-width: 100%;
+    transition: width 0.3s ease;
+    /* Add a transition effect for smooth width changes */
+    vertical-align: center;
+}
+#progress-dz {
+    display: inline;
+}
+#uploads {
+    color: white;
+    height: 100%;
+}
+#previews {
+    width: 100%;
+}
+
+#my-dropzone {
+    background-color: #f44336;
+    border-radius: 30px;
+    border-color: black;
+    border-width: 5px;
+}
+
+
+/* misc */
+
+#text, #converted-text {
+    background-color: white; 
+    height: 100%; 
+    width: 100%; 
+    resize: none
+}
+
+
+/* Change the default website background color */
+body {
+    background-color: #2b2d2d; /* Light gray color */
+    color: white;
+}
+
+#search {
+    background-color: white;
+}
+
+@media (max-width: 768px) {
+    .nophone {
+        display: none; /* Show phone-only tbody */
+    }
+}
+
+
+[type=checkbox]:checked + span:not(.lever):before {
+
+    border-right: 2px solid #FF0000 !important;
+    border-bottom: 2px solid #FF0000 !important;
+}
+
+.toast {
+    background-color: #228B22; /* Green color */
+  }
+
+  .toast-content {
+    color: #ffffff !important; /* White text color for better visibility on green background */
+  }

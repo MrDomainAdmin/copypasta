@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CopyPasta</title>
+    <link href="./static/materialize.css" rel="stylesheet">
+    <link href="./static/styles.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="./static/favicon.ico">
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">    
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="nav-extended red">
+        <div class="nav-wrapper container">
+            <a href="#" class="brand-logo">CopyPasta</a>
+            <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+                <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('files')">Files</a></li>
+                <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('functions')">Shell Functions</a></li>
+                <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('help')">Help</a></li>
+                <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('uploads')">Upload Files</a></li>
+                <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('paste')">Paste Text</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <ul class="sidenav" id="mobile-nav">
+        <li><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="location.reload()">Files</a></li>
+        <li><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('uploads')">Upload Files</a></li>
+        <li><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('paste')">Paste Text</a></li>
+    </ul>
+
+    <!-- Content Sections -->
+    <div class="container">
+        <div class="tab-content" id="files" style="display: block;">
+            <h2>Files</h2>
+            <div class="input-field">
+                <label id="searchicon" class="label-icon" for="search"><i class="material-icons">search</i></label>
+                <input id="search" type="search" required />
+            </div>
+            <form action="/remove" method="post">
+                {% if downloads %}
+                <table id="thetable" class="striped highlight">
+                    <thead>
+                        <tr>
+                            <th class="nophone">Index</th>
+                            <th>File</th>
+                            <th>Download</th>
+                            <th>Preview</th>
+                            <th class="nophone">To Base64</th>
+                            <th>Size</th>
+                            <th class="nophone">Date</th>
+                            <th class="nophone">MD5</th>
+                            <th class="nophone">
+                                <label><input type="checkbox" id="select-all" /><span>Delete All</span></label>
+                            </th>
+                        </tr>
+                    </thead>
+                    {% for file in downloads %}
+                    <tr>
+                        <td class="nophone">{{ loop.index }}</td>
+                        <td>{{ file[0] }}</td>
+                        <td>
+                            <a class="btn btn-floating waves-effect blue" href="{{ file[1] }}" download> <i
+                                    class="material-icons">download</i></a>
+                        </td>
+                        <td>
+                            <a class="btn btn-floating waves-effect green" href="./preview/{{ file[0] }}"><i
+                                    class="material-icons">visibility</i></a>
+                        </td>
+                        <td class="nophone">
+                            <a class="btn btn-floating waves-effect yellow" href="./b64/{{ file[0] }}"><i
+                                    class="material-icons">code</i></a>
+                        </td>
+                        <td>{{ file[2] }}</td>
+                        <td class="nophone">{{ file[3] }}</td>
+                        <td class="nophone">{{ file[4] }}</td>
+                        <td class="nophone">
+                            <label><input type="checkbox" name="filedel" value="{{ file[0] }}" /><span></span></label>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="nophone">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><button class="waves-effect waves-light btn red" type="submit"
+                                onclick="return confirm('Are you sure you want to delete the selected files?')">Delete Files</button></td>
+                    </tr>
+                </table>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="tab-content" id="functions">
+            <h3>Shell Functions</h3>
+            <p>Some helper functions for you</p>
+
+            <h4>Curl Upload</h4>
+            <pre>curl -F file=@"filename" {{ host }}upload</pre>
+            <pre>curl -F text="your text here" {{ host }}text</pre>
+            <pre>curl -F text="$(cat file.txt)" {{ host }}text</pre>
+
+            <h4>Curl Download</h4>
+            <pre>curl {{ host }}&lt;index&gt; -L -o &lt;filename&gt;</pre>
+            <pre>curl http://192.168.0.64:8080/static/files/&lt;filename&gt; -L -o &lt;filename&gt;</pre>
+        </div>
+
+        <div class="tab-content" id="help">
+            <h3>Helpers</h3>
+            <pre>
+    # ~/.bashrc functions 
+    export COPYPASTA="{{ host }}"
+
+    copy () {
+    curl $COPYPASTA/clipboard -s | xclip -selection clipboard
+    }
+
+    paste () {
+    local input=""
+    if [[ -p /dev/stdin ]]; then
+        input="$(cat -)"
+    else
+        input="${@}"
+    fi
+    curl -F text="$input" $COPYPASTA
+    }
+
+    upload () {
+    curl -F upload=@"$1" $COPYPASTA -s
+    echo "[*] Uploaded $1 to $COPYPASTA."
+    }
+
+    download () {
+    curl $COPYPASTA/$1 -L -o $2
+    }
+
+    downloads () {
+    if [ "$1" = "-a" ] || [ "$1" = "--all" ]; then
+        DETAILS="true"
+    else
+        DETAILS="false"
+    fi
+    curl $COPYPASTA/list?details=$DETAILS
+    }
+            </pre>
+        </div>
+
+        <div class="tab-content" id="uploads">
+            <div class="dropzone" id="my-dropzone">
+                <div class="dz-message"><img src="static/images/cloud.png" />
+                    <p>Drag and drop files or click to upload.</p>
+                </div>
+            </div>
+            <br />
+            <div class="table files striped" id="previews">
+                <div class="file-row file-header" id="template">
+                    <div style="width: 60%;">
+                        <strong>File</strong>
+                    </div>
+                    <div style="width: 15%;">
+                        <strong>Size</strong>
+                    </div>
+                    <div style="width: 25%;">
+                        <strong>Upload Progress</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="tab-content" id="paste">
+            <div class="col s8">
+                <form action="/text" method="post">
+                    <div class="input-field">
+                        <textarea class="materialize-textarea" id="text" name="text" rows="5" cols="30"></textarea>
+                        <button class="waves-effect waves-light btn center green" name="save_text" type="submit"
+                            title="Save pasted text as a file available for download"><i
+                                class="material-icons left">feed</i>Save as Text</button>
+                        <button class="waves-effect waves-light btn center teal" name="save_b64" type="submit"
+                            title="Save a base64-encoded blob as a file available for download">
+                            <i class="material-icons left">data_object</i>Save as B64
+                        </button>
+                        <button class="waves-effect waves-light btn center light-blue" name="view_b64" type="button"
+                            title="Save pasted text as a file available for download" onclick="viewB64()">
+                            <i class="material-icons left">feed</i>Convert to B64
+                        </button>
+                        <button class="waves-effect waves-light btn center indigo" name="view_b64p" type="button"
+                            title="Save a base64-encoded blob as a file available for download" onclick="viewB64p()">
+                            <i class="material-icons left">data_object</i>Convert to B64 [powershell -ec]
+                        </button>
+                        <br><br>
+                        <textarea class="materialize-textarea" id="converted-text" style="display: none;"
+                            name="convert-text" rows="5" cols="30"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+ <script>
+    //mobile nav
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.sidenav');
+        var instances = M.Sidenav.init(elems);
+
+        // Add event listener to sidenav items
+        var sidenavItems = document.querySelectorAll('#mobile-nav li');
+        sidenavItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+                var sidenavInstance = M.Sidenav.getInstance(elems[0]);
+                sidenavInstance.close();
+            });
+        });
+    });
+
+    // Toast
+    document.addEventListener('DOMContentLoaded', function () {
+        const uploadMessage = localStorage.getItem('uploadMessage');
+        if (uploadMessage) {
+            // Display the upload message to the user
+            showToast(uploadMessage);
+            
+            // Clear the message from local storage so it doesn't display again on subsequent reloads
+            localStorage.removeItem('uploadMessage');
+        }
+    });
+
+
+ </script>
+<script>
+    // Select All Script
+    const selectAll = document.querySelector("#select-all");
+    const checkboxes = document.querySelectorAll('input[name="filedel"]');
+    if (checkboxes.length > 0) {
+        selectAll.addEventListener("change", function () {
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = selectAll.checked;
+            });
+        });
+    }
+</script>
+<script>
+    // Search Bar Functionality
+    $(document).ready(function () {
+        $("#search").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+
+            // Get all rows except the last one
+            var rows = $("#thetable tr:not(:last)");
+            var lastRow = $("#thetable tr:last");
+
+            // Perform the filtering
+            rows.filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+</script>
+
+<script>
+    // JavaScript code for tab functionality
+    function showTab(tabId) {
+        // Hide all tab content
+        const tabContents = document.querySelectorAll(".tab-content");
+        tabContents.forEach((content) => {
+            content.style.display = "none";
+        });
+
+        // Show the selected tab content
+        const tabContent = document.getElementById(tabId);
+        tabContent.style.display = "block";
+    }
+
+    // Show Toasts
+    function showToast(message, duration = 4000) {
+        M.toast({ html: message, displayLength: duration, classes: 'toast-content' });
+    }
+</script>
+
+<script>
+    
+    // Dropzone Script
+    Dropzone.options.myDropzone = {
+        dictDefaultMessage: "Drop files or click here to upload",
+        previewTemplate:
+            '<div class=file-row id=template><div style=width:60%><p class=name data-dz-name></p><strong class="error text-danger"data-dz-errormessage></strong></div><div style=width:15%><p class=size data-dz-size></div><div class=dz-progress id=progress-dz style=width:25%><div class=dz-upload style=width:0></div><div class=progress-bar>0%</div></div></div>',
+        previewsContainer: "#previews",
+        url: "/upload",
+        method: "post",
+        parallelUploads: 20,
+        uploadMultiple: false,
+        maxFilesize: 9999999999,
+        paramName: "file",
+        autoQueue: true,
+        createImageThumbnails: false,
+        dictFileSizeUnits: {
+            tb: "TB",
+            gb: "GB",
+            mb: "MB",
+            kb: "KB",
+            b: "b",
+        },
+        init: function init() {
+            var dz = this;
+
+            // Event handler for upload progress
+            dz.on("uploadprogress", function (file, progress, bytesSent) {
+                var percentage = (bytesSent / file.size) * 100;
+
+                // Find the progress bar for the current file
+                var progressBar = file.previewElement.querySelector(".progress-bar");
+                if (progressBar) {
+                    // Update the width of the progress bar for the current file
+                    progressBar.style.width = percentage + "%";
+
+                    // You can also display the file name along with the progress if needed
+                    if (Math.round(percentage) >= 100) {
+                        percentage = 100;
+                    }
+                    progressBar.innerHTML = Math.round(percentage) + "%";
+
+                    progressBar.classList.add("green-progress-bar"); // Apply the green progress bar class
+                }
+            });
+
+            dz.on("addedfile", function (file) {
+                document.querySelector(".file-header").style.display = "table-row";
+            });
+
+            this.on("queuecomplete", function (file) {
+                localStorage.setItem('uploadMessage', 'Upload completed successfully!');
+                location.reload();
+            });
+        },
+    };
+</script>
+
+<script>
+    // Paste Text Conversion
+    function stringToUtf16leBytes(inputString) {
+    const encoder = new TextEncoder('utf-16');
+    const utf16Bytes = encoder.encode(inputString);
+
+    // Convert UTF-16 to UTF-16LE (Little Endian)
+    const utf16leBytes = new Uint8Array(utf16Bytes.length * 2);
+    for (let i = 0; i < utf16Bytes.length; i++) {
+        utf16leBytes[i * 2] = utf16Bytes[i] & 0xff;
+        utf16leBytes[i * 2 + 1] = (utf16Bytes[i] >> 8) & 0xff;
+    }
+
+    return utf16leBytes;
+    }
+
+    function viewB64() {
+        const textarea = document.getElementById("text");
+        const textToConvert = textarea.value;
+        const encodedText = btoa(textToConvert);
+        
+        const convertedTextarea = document.getElementById("converted-text");
+        convertedTextarea.value = encodedText;
+        convertedTextarea.style.display = "block"; // Display the converted textarea
+    }
+
+    function viewB64p() {
+        const textarea = document.getElementById("text");
+    const textToConvert = textarea.value;
+
+    // Step 2: Convert from UTF-16 to UTF-16LE
+    const utf16Encoder = new TextEncoder("utf-16");
+    const utf16Bytes = utf16Encoder.encode(textToConvert);
+    
+    // Convert UTF-16 to UTF-16LE (Little Endian)
+    const utf16leBytes = new Uint8Array(utf16Bytes.length * 2);
+    for (let i = 0; i < utf16Bytes.length; i++) {
+        utf16leBytes[i * 2] = utf16Bytes[i] & 0xff;
+        utf16leBytes[i * 2 + 1] = (utf16Bytes[i] >> 8) & 0xff;
+    }
+
+    // Step 3: Encode as Base64
+    const base64Encoded = btoa(String.fromCharCode.apply(null, utf16leBytes));
+        
+        const convertedTextarea = document.getElementById("converted-text");
+        convertedTextarea.value = base64Encoded;
+        convertedTextarea.style.display = "block"; // Display the converted textarea
+    }
+</script>
+
+</html>

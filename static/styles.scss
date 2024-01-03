@@ -1,0 +1,43 @@
+/* dark mode */
+body {
+    background-color: #eee;
+    transition: color 1s ease, background-color 1s ease;
+}
+body.dark {
+    background-color: #202123;
+    color: #fff;
+}
+body.dark nav {
+    background-color: #26a69a;
+}
+body.dark .card {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+body.dark .btn {
+    background-color: #ee6f73;
+}
+body.dark .divider {
+    opacity: 0.2;
+}
+body.dark .sidenav {
+    background-color: #2d2d31;
+}
+body.dark .sidenav li a:not(.subheader) {
+    color: #89b2f5;
+}
+body.dark .sidenav li a:not(.subheader):hover {
+    background-color: #3b4043;
+}
+body.dark .sidenav li a.subheader {
+    color: #9aa0a6;
+}
+body.dark .sidenav li a .material-icons {
+    color: #9aa0a6;
+}
+body.dark .collection {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+body.dark .collection .collection-item {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
