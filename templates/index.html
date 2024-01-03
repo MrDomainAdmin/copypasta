@@ -43,9 +43,9 @@
     <div class="container">
         <div class="tab-content" id="files" style="display: block;">
             <h2>Files</h2>
-            <div class="input-field">
+            <div class="input-field" style="position: relative">
                 <label id="searchicon" class="label-icon" for="search"><i class="material-icons">search</i></label>
-                <input id="search" type="search" required />
+                <input style="padding-left: 2em"id="search" type="search" required />
             </div>
             <form action="/remove" method="post">
                 {% if downloads %}
@@ -279,13 +279,14 @@
         $("#search").on("keyup", function () {
             var value = $(this).val().toLowerCase();
 
-            // Get all rows except the last one
-            var rows = $("#thetable tr:not(:last)");
-            var lastRow = $("#thetable tr:last");
+            // Get all rows except the first row (header)
+            var rows = $("#thetable tr").not(":first, :last");
 
             // Perform the filtering
-            rows.filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            rows.each(function () {
+                var rowText = $(this).text().toLowerCase();
+                var showRow = rowText.indexOf(value) > -1;
+                $(this).toggle(showRow);
             });
         });
     });
