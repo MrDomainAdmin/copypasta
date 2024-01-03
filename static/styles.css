@@ -100,13 +100,17 @@ div.table .file-row:nth-child(even) {
 
 /* misc */
 
-#text, #converted-text {
+#text, #converted-text, #clipboard {
     background-color: white; 
     height: 100%; 
     width: 100%; 
     resize: none
 }
 
+#clipboard {
+    max-height: 30em; 
+    overflow-y: auto;
+}
 
 /* Change the default website background color */
 body {

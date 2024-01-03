@@ -29,4 +29,6 @@ app.include_router(createRouter(app))
 if __name__ == "__main__":
     if not os.path.exists(STATICFILESPATH):
         os.mkdir(STATICFILESPATH)
+    with open("./static/clipboard", 'w'):
+        pass
     uvicorn.run(app, host=HOST, port=PORT, log_config=log_config)

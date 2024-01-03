@@ -28,6 +28,7 @@
                 <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('help')">Help</a></li>
                 <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('uploads')">Upload Files</a></li>
                 <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('paste')">Paste Text</a></li>
+                <li class="tab"><a class="waves-effect waves-light btn red" href="javascript:void(0);" onclick="showTab('saveclipboard')">Clipboard</a></li>
             </ul>
         </div>
     </nav>
@@ -209,6 +210,21 @@
                 </form>
             </div>
         </div>
+
+
+        <div class="tab-content" id="saveclipboard">
+            <div class="col s8">
+                <form action="/clipboard" method="post">
+                    <div class="input-field">
+                        <textarea class="materialize-textarea" id="clipboard" name="clipboard" rows="5" cols="30">{{ clipboard }}</textarea>
+                        <button class="waves-effect waves-light btn center green" name="save_clipboard" type="submit"
+                            title="Save pasted text to this page"><i
+                                class="material-icons left">feed</i>Save to clipboard</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 
     <!-- Materialize JavaScript -->

@@ -22,9 +22,10 @@ from modules.variables import STATICFILESPATH, DATABASE
 def getHome(request):
     downloads = getFileList()
     host = request.base_url
+    clipboard = getClipboard()
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "host": host, "downloads": downloads}
+        {"request": request, "host": host, "downloads": downloads, "clipboard": clipboard}
     )
 
 
@@ -43,6 +44,9 @@ def getMd5(filename):
         ).fetchone()
         return row[0] if row else None
 
+
+def getClipboard():
+    return open("./static/clipboard", "r").read()
 
 # FastAPI Templates
 templates = Jinja2Templates(directory="templates")
@@ -164,6 +168,22 @@ async def uploadText(request: Request):
                 f.write(text)
 
     return getHome(request)
+
+
+# /clipboard
+async def saveClipboard(request: Request):
+    form = await request.form()
+    text = form.get("clipboard")
+    filepath = "./static/clipboard"
+    if text:
+        with open(filepath, "w") as f:
+            f.write(text)
+    else:
+        with open(filepath, "w") as f:
+            pass
+    return getHome(request)
+
+
 
 
 # /preview

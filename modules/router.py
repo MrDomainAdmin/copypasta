@@ -14,6 +14,7 @@ from modules.util import (
     uploadText,
     indexPost,
     indexGet,
+    saveClipboard,
 )
 
 
@@ -46,6 +47,11 @@ def createRouter(app):
     async def remove(backgroundTasks: BackgroundTasks,
                      filedel: list = Form(None)):
         return await rm(backgroundTasks, filedel)
+    
+    @router.post("/clipboard", tags=["file"])
+    async def save(request: Request):
+        await saveClipboard(request)
+        return RedirectResponse(url="/")
 
     @router.get("/")
     async def index_get(request: Request):
